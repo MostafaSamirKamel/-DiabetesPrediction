@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction | Machine Learning Analysis Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header Styles */
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .report-header h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .report-header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 400;
+            position: relative;
+        }
+
+        .report-header .meta {
+            margin-top: 24px;
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .report-header .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* Section Styles */
+        .section {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-number {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 28px 0 16px 0;
+        }
+
+        .section h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 20px 0 12px 0;
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-size: 1.05rem;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin: 24px 0;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #f1f5f9 100%);
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #ffffff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-card .description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Metric Badge */
+        .metric-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .metric-badge.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .metric-badge.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .metric-badge.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-color);
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        .image-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-card .caption {
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            font-weight: 500;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        li strong {
+            color: var(--text-primary);
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border-left: 4px solid var(--primary-color);
+            padding: 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .highlight-box.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border-left-color: var(--success-color);
+        }
+
+        .highlight-box.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border-left-color: var(--warning-color);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            margin: 24px 0;
+        }
+
+        .comparison-table th {
+            text-align: center;
+        }
+
+        .comparison-table td {
+            text-align: center;
+        }
+
+        .comparison-table .model-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: left;
+        }
+
+        .best-value {
+            background: rgba(16, 185, 129, 0.15);
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        /* Winner Badge */
+        .winner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 16px 0;
+        }
+
+        /* Footer */
+        .report-footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .report-footer .divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            margin: 0 auto 20px auto;
+            border-radius: 2px;
+        }
+
+        /* Code Block */
+        code {
+            background: var(--bg-secondary);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .report-header {
+                padding: 40px 24px;
+            }
+
+            .report-header h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .image-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print Styles */
+        /* @media print {
+            body {
+                background: white;
+            }
+
+            .report-header {
+                box-shadow: none;
+            }
+
+            .section {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+
+            .image-card {
+                page-break-inside: avoid;
+            }
+        } */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="report-header">
+            <h1>🩺 Diabetes Prediction</h1>
+            <p class="subtitle">Machine Learning Analysis & Predictive Modeling Report</p>
+            <div class="meta">
+                <div class="meta-item">
+                    <span>📊</span>
+                    <span>100,000 Samples</span>
+                </div>
+                <div class="meta-item">
+                    <span>🤖</span>
+                    <span>3 ML Models</span>
+                </div>
+                <div class="meta-item">
+                    <span>✅</span>
+                    <span>97.11% Best Accuracy</span>
+                </div>
+                <div class="meta-item">
+                    <span>📅</span>
+                    <span>December 2025</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="section" style="margin-top: -20px;">
+            <div class="section-header">
+                <div class="section-number">👥</div>
+                <h2>Team Members</h2>
+            </div>
+            <div class="card-grid container" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-card">
+                    <div class="label">Member</div>
+                    <div class="value" style="font-size: 1.4rem;">Mostafa Samir</div>
+                    <div class="description">ID/ 220100221</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Member</div>
+                    <div class="value" style="font-size: 1.4rem;">Ahmed Eid</div>
+                    <div class="description">ID/ 220100017</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Member</div>
+                    <div class="value" style="font-size: 1.4rem;">Manar Bahaa</div>
+                    <div class="description">ID/ 220100229</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Member</div>
+                    <div class="value" style="font-size: 1.4rem;">Alaa Hassan</div>
+                    <div class="description">ID/ 220100044</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Executive Summary -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">📋</div>
+                <h2>Executive Summary</h2>
+            </div>
+            <p>
+                This report presents a comprehensive machine learning analysis for predicting diabetes in patients. 
+                The project implements a complete ML pipeline including data preprocessing, exploratory data analysis (EDA), 
+                feature selection, and three predictive models: <strong>Logistic Regression</strong>, <strong>Decision Tree</strong>, 
+                and <strong>Random Forest</strong>.
+            </p>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="label">Dataset Size</div>
+                    <div class="value">96,146</div>
+                    <div class="description">Samples after preprocessing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Features</div>
+                    <div class="value">8</div>
+                    <div class="description">Input variables analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Best Model</div>
+                    <div class="value">Random Forest</div>
+                    <div class="description">97.11% accuracy achieved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">ROC-AUC Score</div>
+                    <div class="value">0.9719</div>
+                    <div class="description">Excellent discrimination</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem Statement -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <h2>Problem Statement</h2>
+            </div>
+            
+            <h3>Background</h3>
+            <p>
+                Diabetes mellitus is a chronic metabolic disease characterized by elevated blood glucose levels, 
+                affecting millions worldwide. According to the World Health Organization, diabetes directly causes 
+                1.5 million deaths annually. Early detection and intervention are crucial for preventing severe 
+                health complications including cardiovascular disease, kidney failure, and vision loss.
+            </p>
+
+            <h3>Objective</h3>
+            <p>
+                Develop and compare machine learning models that can accurately predict whether a patient has diabetes 
+                based on various health indicators and demographic factors, enabling early intervention and improved 
+                patient outcomes.
+            </p>
+
+            <h3>Success Criteria</h3>
+            <ul>
+                <li><strong>High Accuracy:</strong> Achieve prediction accuracy exceeding 90%</li>
+                <li><strong>Minimize False Negatives:</strong> Ensure high recall to identify diabetic patients</li>
+                <li><strong>Model Interpretability:</strong> Provide insights into diabetes risk factors</li>
+                <li><strong>Clinical Viability:</strong> Create a practical screening tool for healthcare</li>
+            </ul>
+        </section>
+
+        <!-- Dataset Description -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <h2>Dataset Description</h2>
+            </div>
+
+            <h3>Data Source</h3>
+            <div class="highlight-box">
+                <p><strong>Dataset:</strong> Diabetes Prediction Dataset from Kaggle</p>
+                <p><strong>Source:</strong> <code>iammustafatz/diabetes-prediction-dataset</code></p>
+                <p><strong>Original Size:</strong> 100,000 samples | <strong>Final Size:</strong> 96,146 samples (after cleaning)</p>
+            </div>
+
+            <h3>Features Overview</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Range/Values</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>gender</strong></td>
+                            <td>Categorical</td>
+                            <td>Patient's gender</td>
+                            <td>Female, Male, Other</td>
+                        </tr>
+                        <tr>
+                            <td><strong>age</strong></td>
+                            <td>Numerical</td>
+                            <td>Patient's age in years</td>
+                            <td>0.08 - 80 years (Mean: 41.9)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>hypertension</strong></td>
+                            <td>Binary</td>
+                            <td>Hypertension status</td>
+                            <td>0 = No, 1 = Yes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>heart_disease</strong></td>
+                            <td>Binary</td>
+                            <td>Heart disease status</td>
+                            <td>0 = No, 1 = Yes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>smoking_history</strong></td>
+                            <td>Categorical</td>
+                            <td>Smoking status</td>
+                            <td>never, former, current, not current, No Info</td>
+                        </tr>
+                        <tr>
+                            <td><strong>bmi</strong></td>
+                            <td>Numerical</td>
+                            <td>Body Mass Index</td>
+                            <td>10.01 - 95.69 (Mean: 27.3)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>HbA1c_level</strong></td>
+                            <td>Numerical</td>
+                            <td>Hemoglobin A1c level (%)</td>
+                            <td>3.5 - 9.0% (Mean: 5.5%)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>blood_glucose_level</strong></td>
+                            <td>Numerical</td>
+                            <td>Blood glucose level (mg/dL)</td>
+                            <td>80 - 300 mg/dL (Mean: 138.1)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>diabetes</strong></td>
+                            <td>Binary</td>
+                            <td><strong>Target Variable</strong> - Diabetes diagnosis</td>
+                            <td>0 = No, 1 = Yes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Target Distribution</h3>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="label">Non-Diabetic (0)</div>
+                    <div class="value">87,664</div>
+                    <div class="description">91.18% of samples</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Diabetic (1)</div>
+                    <div class="value">8,482</div>
+                    <div class="description">8.82% of samples</div>
+                </div>
+            </div>
+
+            <div class="highlight-box warning">
+                <p><strong>⚠️ Class Imbalance:</strong> Significant imbalance with approximately 10:1 ratio between non-diabetic and diabetic samples. This requires careful model evaluation focusing on recall and precision balance.</p>
+            </div>
+
+            <h3>Data Preprocessing Steps</h3>
+            <ol>
+                <li><strong>Missing Values:</strong> No missing values found in the dataset</li>
+                <li><strong>Duplicate Records:</strong> 3,854 duplicate rows removed (3.85%)</li>
+                <li><strong>Categorical Encoding:</strong>
+                    <ul>
+                        <li>Gender: Female→0, Male→1, Other→2</li>
+                        <li>Smoking History: 6 categories encoded (0-5)</li>
+                    </ul>
+                </li>
+                <li><strong>Final Clean Dataset:</strong> 96,146 rows × 9 columns</li>
+            </ol>
+        </section>
+
+        <!-- Graphs and Visualizations -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <h2>Graphs and Visualizations</h2>
+            </div>
+
+            <h3>Exploratory Data Analysis</h3>
+            
+            <div class="image-gallery">
+                <div class="image-card">
+                    <img src="Target Variable Distribution.png" alt="Target Variable Distribution">
+                    <div class="caption">📊 Target Variable Distribution</div>
+                </div>
+                <div class="image-card">
+                    <img src="Distribution of Numerical Features.png" alt="Distribution of Numerical Features">
+                    <div class="caption">📈 Distribution of Numerical Features</div>
+                </div>
+                <div class="image-card">
+                    <img src="Correlation Heatmap.png" alt="Correlation Heatmap">
+                    <div class="caption">🔥 Correlation Heatmap</div>
+                </div>
+                <div class="image-card">
+                    <img src="Box Plots - Outlier Detection.png" alt="Box Plots - Outlier Detection">
+                    <div class="caption">📦 Box Plots - Outlier Detection</div>
+                </div>
+            </div>
+
+            <h3>Key Correlation Findings</h3>
+            <p>The correlation analysis revealed the following relationships with diabetes diagnosis:</p>
+            <ol>
+                <li><strong>HbA1c_level:</strong> Strongest positive correlation - Higher HbA1c levels strongly associated with diabetes</li>
+                <li><strong>blood_glucose_level:</strong> Strong positive correlation - Elevated glucose levels indicate diabetes risk</li>
+                <li><strong>age:</strong> Moderate positive correlation - Diabetes risk increases with age</li>
+                <li><strong>bmi:</strong> Weak to moderate correlation - Higher BMI associated with increased risk</li>
+                <li><strong>hypertension:</strong> Weak positive correlation - Co-morbidity relationship</li>
+                <li><strong>heart_disease:</strong> Weak positive correlation - Often occurs together with diabetes</li>
+            </ol>
+
+            <h3>Feature Selection</h3>
+            <div class="image-gallery">
+                <div class="image-card">
+                    <img src="Feature Selection.png" alt="Feature Selection">
+                    <div class="caption">🎯 Feature Selection Analysis</div>
+                </div>
+                <div class="image-card">
+                    <img src="Feature Importance (Random Forest).png" alt="Feature Importance">
+                    <div class="caption">🌲 Feature Importance (Random Forest)</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Importance Score</th>
+                            <th>Correlation Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>HbA1c_level</strong></td>
+                            <td>0.5045 (50.45%)</td>
+                            <td><span class="metric-badge success">Highest</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>blood_glucose_level</strong></td>
+                            <td>0.3883 (38.83%)</td>
+                            <td><span class="metric-badge success">High</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>age</strong></td>
+                            <td>0.0450 (4.50%)</td>
+                            <td><span class="metric-badge info">Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>bmi</strong></td>
+                            <td>0.0284 (2.84%)</td>
+                            <td><span class="metric-badge info">Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>hypertension</strong></td>
+                            <td>0.0186 (1.86%)</td>
+                            <td><span class="metric-badge warning">Low-Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>heart_disease</strong></td>
+                            <td>0.0109 (1.09%)</td>
+                            <td><span class="metric-badge warning">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>smoking_history</strong></td>
+                            <td>0.0043 (0.43%)</td>
+                            <td><span class="metric-badge warning">Low</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Results of Predictive Models -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <h2>Results of Predictive Models</h2>
+            </div>
+
+            <h3>Dataset Split</h3>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="label">Training Set</div>
+                    <div class="value">67,302</div>
+                    <div class="description">70% of data</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Testing Set</div>
+                    <div class="value">28,844</div>
+                    <div class="description">30% of data</div>
+                </div>
+            </div>
+
+            <h3>Model 1: Logistic Regression</h3>
+            <div class="highlight-box">
+                <p><strong>Configuration:</strong> <code>LogisticRegression(max_iter=1000, random_state=42)</code></p>
+            </div>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="label">Accuracy</div>
+                    <div class="value">95.81%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Precision</div>
+                    <div class="value">0.8583</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Recall</div>
+                    <div class="value">0.6283</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">ROC-AUC</div>
+                    <div class="value">0.9593</div>
+                </div>
+            </div>
+            <div class="image-gallery">
+                <div class="image-card">
+                    <img src="Logistic Regression Evaluation.png" alt="Logistic Regression Results">
+                    <div class="caption">📊 Logistic Regression - Confusion Matrix</div>
+                </div>
+            </div>
+
+            <h3>Model 2: Decision Tree</h3>
+            <div class="highlight-box">
+                <p><strong>Configuration:</strong> <code>DecisionTreeClassifier(max_depth=10, min_samples_split=20, random_state=42)</code></p>
+            </div>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="label">Accuracy</div>
+                    <div class="value">97.06%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Precision</div>
+                    <div class="value">0.9685</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Recall</div>
+                    <div class="value">0.6896</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">ROC-AUC</div>
+                    <div class="value">0.9731</div>
+                </div>
+            </div>
+            <div class="image-gallery">
+                <div class="image-card">
+                    <img src="Decision Tree Evaluation.png" alt="Decision Tree Results">
+                    <div class="caption">🌳 Decision Tree - Confusion Matrix</div>
+                </div>
+            </div>
+
+            <h3>Model 3: Random Forest</h3>
+            <div class="highlight-box success">
+                <p><strong>Configuration:</strong> <code>RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)</code></p>
+                <p><strong>🏆 Best Performing Model</strong></p>
+            </div>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="label">Accuracy</div>
+                    <div class="value">97.11%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Precision</div>
+                    <div class="value">0.9977</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Recall</div>
+                    <div class="value">0.6743</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">ROC-AUC</div>
+                    <div class="value">0.9719</div>
+                </div>
+            </div>
+            <div class="image-gallery">
+                <div class="image-card">
+                    <img src="Random Forest Evaluation.png" alt="Random Forest Results">
+                    <div class="caption">🌲 Random Forest - Confusion Matrix</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model Comparison -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <h2>Comparison of Models</h2>
+            </div>
+
+            <h3>Performance Metrics Comparison</h3>
+            <div class="table-container comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Accuracy</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>ROC-AUC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="model-name">Logistic Regression</td>
+                            <td>0.9580 (95.80%)</td>
+                            <td>0.8583</td>
+                            <td>0.6283</td>
+                            <td>0.7255</td>
+                            <td>0.9593</td>
+                        </tr>
+                        <tr>
+                            <td class="model-name">Decision Tree</td>
+                            <td>0.9706 (97.06%)</td>
+                            <td>0.9685</td>
+                            <td>0.6896</td>
+                            <td>0.8056</td>
+                            <td class="best-value">0.9731</td>
+                        </tr>
+                        <tr>
+                            <td class="model-name">Random Forest</td>
+                            <td class="best-value">0.9711 (97.11%)</td>
+                            <td class="best-value">0.9977</td>
+                            <td>0.6743</td>
+                            <td class="best-value">0.8047</td>
+                            <td>0.9719</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="image-gallery">
+                <div class="image-card">
+                    <img src="Model Performance Comparison.png" alt="Model Performance Comparison">
+                    <div class="caption">📊 Model Performance Comparison</div>
+                </div>
+                <div class="image-card">
+                    <img src="ROC Curves Comparison.png" alt="ROC Curves Comparison">
+                    <div class="caption">📈 ROC Curves Comparison</div>
+                </div>
+            </div>
+
+            <h3>Analysis Summary</h3>
+            <ul>
+                <li><strong>Highest Accuracy:</strong> Random Forest (97.11%)</li>
+                <li><strong>Highest Precision:</strong> Random Forest (99.77%)</li>
+                <li><strong>Highest Recall:</strong> Decision Tree (68.96%)</li>
+                <li><strong>Best F1-Score:</strong> Decision Tree (80.56%)</li>
+                <li><strong>Best ROC-AUC:</strong> Decision Tree (0.9731)</li>
+            </ul>
+
+            <div class="highlight-box success">
+                <p style="display: flex; align-items: center; gap: 12px; margin-bottom: 0;">
+                    <span class="winner-badge">🏆 Winner: Random Forest</span>
+                </p>
+                <p style="margin-top: 16px;">
+                    The Random Forest model is selected as the best performer due to its highest accuracy (97.11%), 
+                    exceptional precision (99.77%), and robust ensemble approach that reduces overfitting while 
+                    providing valuable feature importance insights.
+                </p>
+            </div>
+        </section>
+
+        <!-- Final Conclusion -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">6</div>
+                <h2>Final Conclusion</h2>
+            </div>
+
+            <h3>Key Findings</h3>
+            <ol>
+                <li><strong>Model Success:</strong> Random Forest achieved 97.11% accuracy, exceeding the 90% success criterion</li>
+                <li><strong>Important Predictors:</strong> HbA1c level (50.45%) and blood glucose level (38.83%) are the strongest indicators</li>
+                <li><strong>Data Quality:</strong> Clean dataset with no missing values after preprocessing</li>
+                <li><strong>Ensemble Advantage:</strong> Random Forest outperformed single models through ensemble learning</li>
+            </ol>
+
+            <h3>Clinical Application</h3>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="label">Screening Tool</div>
+                    <div class="value">✅</div>
+                    <div class="description">Identify patients requiring further testing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Risk Stratification</div>
+                    <div class="value">✅</div>
+                    <div class="description">Prioritize intervention resources</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Preventive Care</div>
+                    <div class="value">✅</div>
+                    <div class="description">Target high-risk individuals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Monitoring</div>
+                    <div class="value">✅</div>
+                    <div class="description">Track risk changes over time</div>
+                </div>
+            </div>
+
+            <h3>Limitations</h3>
+            <ol>
+                <li><strong>Dataset Imbalance:</strong> Only 8.82% positive cases may bias predictions</li>
+                <li><strong>Generalization:</strong> Model performance on different populations needs validation</li>
+                <li><strong>Temporal Factors:</strong> No longitudinal data for progression tracking</li>
+            </ol>
+        </section>
+
+        <!-- Prediction Output -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">📋</div>
+                <h2>Appendix: Sample Predictions</h2>
+            </div>
+
+            <div class="image-gallery">
+                <div class="image-card">
+                    <img src="Prediction Distribution.png" alt="Prediction Distribution">
+                    <div class="caption">📊 Prediction Distribution</div>
+                </div>
+            </div>
+
+            <h3>Model Parameters Summary</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Configuration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Logistic Regression</strong></td>
+                            <td><code>LogisticRegression(max_iter=1000, random_state=42)</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Decision Tree</strong></td>
+                            <td><code>DecisionTreeClassifier(max_depth=10, min_samples_split=20, random_state=42)</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Random Forest</strong></td>
+                            <td><code>RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="report-footer">
+            <div class="divider"></div>
+            <p><strong>Diabetes Prediction Using Machine Learning</strong></p>
+            <p>by Mostafa Samir</p>
+            <p>Built with Python, Scikit-Learn, Pandas, Matplotlib, and Seaborn</p>
+        </footer>
+    </div>
+</body>
+</html>
